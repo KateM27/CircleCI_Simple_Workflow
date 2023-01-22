@@ -11,7 +11,7 @@ commands:
 jobs:
   my_reusable_job_code:
     docker:
-      - image: cimg/node:19.4.0
+      - image: circleci/node:13.8.0
     steps:
       - print_pipeline_id:
           id: << pipeline.id >>
