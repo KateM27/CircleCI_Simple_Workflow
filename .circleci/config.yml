@@ -17,23 +17,40 @@ jobs:
   #           --stack-name myInfra-${CIRCLE_WORKFLOW_ID:0:5} \
   #           --region us-east-1
 
-  configure_infrastructure:
+  # configure_infrastructure:
+  #   docker:
+  #     - image: python:3.7-alpine3.11
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints: [d5:d1:eb:23:73:ed:f4:01:9a:3f:27:21:64:0a:73:6d]
+  #     - run:
+  #         name: Install Ansible
+  #         command: |
+  #           apk add --update ansible
+  #     - run:
+  #         name: Run Playbook and Configure Server
+  #         command: |
+  #           ansible-playbook -i inventory main-cfn.yml
+  smoke_test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: alpine:latest
     steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: [d5:d1:eb:23:73:ed:f4:01:9a:3f:27:21:64:0a:73:6d]
-      - run:
-          name: Install Ansible
-          command: |
-            apk add --update ansible
-      - run:
-          name: Run Playbook and Configure Server
-          command: |
-            ansible-playbook -i inventory main-cfn.yml
+    - run: apk add --update curl
+    - run:
+        name: smoke test
+        command: |
+          URL="https://blog.udacity.com"
+          if curl -s --head${URL}
+          then
+            return 0
+          else
+            return 1
+          fi
 
 workflows:
   my_workflow:
     jobs:
-      - configure_infrastructure
+      # - create_infrastructure
+      # - configure_infrastructure
+      - smoke_test
